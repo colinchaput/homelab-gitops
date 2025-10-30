@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+spec:
+  project: platform
+  destination:
+    name: in-cluster
+    namespace: monitoring
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 59.2.0   # pick a stable version, this is just an example
+    helm:
+      releaseName: kube-prometheus-stack
+      valueFiles:
+        - $values/apps/platform/kube-prometheus-stack/values.yaml
+  sources:
+    - repoURL: https://github.com/colinchaput/cloudforge-gitops
+      targetRevision: HEAD
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
