@@ -1,11 +1,26 @@
 controller:
+  ingressClassResource:
+    name: nginx
+    #default: true   # makes nginx the default ingress class in the cluster
+
   service:
-    type: LoadBalancer
+    type: LoadBalancer        # If using MetalLB, this will get a LAN IP
     loadBalancerIP: 192.168.2.249   # static IP assigned by MetalLB
     externalTrafficPolicy: Local    # preserve real client IPs
+    # If NOT using MetalLB, use NodePort:
+    # type: NodePort
+    # nodePorts:
+    #   http: 30080
+    #   https: 30443
+
+  extraArgs:
+    enable-ssl-passthrough: "true"
+
+  metrics:
+    enabled: true
+
+  publishService:
+    enabled: true
 
   config:
     use-forwarded-headers: "true"
-
-  extraArgs:
-    enable-ssl-passthrough: ""      # optional: allows TLS passthrough ingress rules
