@@ -1,0 +1,29 @@
+# Create namespace automatically
+namespaceOverride: monitoring
+
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    hosts:
+      - grafana.example.com   # CHANGE ME
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.example.com
+  adminPassword: "admin"       # CHANGE ME or use ExternalSecret / SOPS
+
+prometheus:
+  ingress:
+    enabled: false
+
+alertmanager:
+  ingress:
+    enabled: false
+
+# Reduce default resource usage for lab clusters
+prometheusOperator:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 200Mi
