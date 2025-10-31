@@ -3,7 +3,7 @@ kind: ClusterIssuer
 metadata:
   name: selfsigned
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+  # keep these to avoid preview/dry-run errors before CRDs are visible
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   selfSigned: {}
@@ -14,7 +14,7 @@ metadata:
   name: homelab-ca
   namespace: cert-manager
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+  # keep these to avoid preview/dry-run errors before CRDs are visible
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   isCA: true
@@ -34,7 +34,7 @@ kind: ClusterIssuer
 metadata:
   name: homelab-ca
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+  # keep these to avoid preview/dry-run errors before CRDs are visible
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   ca:

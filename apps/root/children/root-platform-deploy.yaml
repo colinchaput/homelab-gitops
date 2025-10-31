@@ -1,8 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-deploy
+  name: root-platform-deploy
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   destination:
@@ -11,7 +13,7 @@ spec:
   source:
     repoURL: https://github.com/colinchaput/homelab-gitops
     targetRevision: HEAD
-    path: apps/root/children
+    path: apps/platform
     directory:
       recurse: true
   syncPolicy:
