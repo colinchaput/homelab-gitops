@@ -15,15 +15,12 @@ spec:
     syncOptions:
       - CreateNamespace=true
   sources:
-    # 1) Helm chart source
-    - repoURL: https://charts.bitnami.com/bitnami
-      chart: nginx
-      targetRevision: 15.16.0    # update as desired
-      helm:
-        valueFiles:
-          - $values/apps/apps/nginx-demo/values.yaml
-
-    # 2) Your Git repo with the values file
-    - repoURL: https://github.com/colinchaput/homelab-gitops
-      targetRevision: HEAD
-      ref: values
+  - repoURL: oci://registry-1.docker.io/bitnamicharts
+    chart: nginx
+    targetRevision: 22.2.3
+    helm:
+      valueFiles:
+        - $values/apps/apps/nginx-demo/values.yaml
+  - repoURL: https://github.com/colinchaput/homelab-gitops
+    targetRevision: HEAD
+    ref: values
