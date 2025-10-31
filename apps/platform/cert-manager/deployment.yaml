@@ -19,7 +19,7 @@ spec:
     - repoURL: https://charts.jetstack.io
       chart: cert-manager
       # Optionally pin a version:
-      # targetRevision: v1.15.3
+      # targetRevision: v1.19.1
       helm:
         valueFiles:
           - $values/apps/platform/cert-manager/values.yaml
