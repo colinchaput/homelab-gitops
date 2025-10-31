@@ -2,6 +2,9 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: selfsigned
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   selfSigned: {}
 ---
@@ -10,6 +13,9 @@ kind: Certificate
 metadata:
   name: homelab-ca
   namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   isCA: true
   secretName: homelab-ca-keypair
@@ -27,6 +33,9 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: homelab-ca
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   ca:
     secretName: homelab-ca-keypair
