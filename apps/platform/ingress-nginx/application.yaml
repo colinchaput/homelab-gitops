@@ -3,32 +3,28 @@ kind: Application
 metadata:
   name: ingress-nginx
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"   # ensure platform layer is installed first
 spec:
-  project: platform                     # or "default" if you haven't created AppProjects yet
+  project: default
   destination:
-    name: in-cluster
+    server: https://kubernetes.default.svc
     namespace: ingress-nginx
-  # Primary source = external Helm chart
-  source:
-    repoURL: https://kubernetes.github.io/ingress-nginx
-    chart: ingress-nginx
-    targetRevision: 4.13.3              # <-- DO NOT use "latest"
-    helm:
-      releaseName: ingress-nginx
-      valueFiles:
-        - $values/apps/platform/ingress-nginx/values.yaml
-
-  # Secondary source = YOUR Git repo providing values.yaml
-  sources:
-    - repoURL: https://github.com/colinchaput/cloudforge-gitops   # <--- CHANGE IF NEEDED
-      targetRevision: HEAD
-      ref: values
-
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  sources:
+    # 1) The Helm chart source (official ingress-nginx chart)
+    - repoURL: https://kubernetes.github.io/ingress-nginx
+      chart: ingress-nginx
+      targetRevision: 4.11.2   # Pin a version; update as needed
+      helm:
+        valueFiles:
+          # Pull values.yaml from the Git repo source defined below
+          - $values/apps/platform/ingress-nginx/values.yaml
+
+    # 2) Your Git repo source that holds the values.yaml
+    - repoURL: https://github.com/colinchaput/homelab-gitops
+      targetRevision: HEAD
+      ref: values
