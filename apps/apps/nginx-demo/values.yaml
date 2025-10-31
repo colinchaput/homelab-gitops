@@ -16,7 +16,10 @@ ingress:
   path: /
   pathType: Prefix
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  tls: []  # set up cert-manager later if you want HTTPS
-
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: homelab-ca
+  tls:
+    - hosts:
+        - nginx-demo.cloudforge.home.arpa
+      secretName: wildcard-cloudforge-home-arpa-tls
 resources: {}
