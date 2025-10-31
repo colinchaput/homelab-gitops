@@ -1,0 +1,22 @@
+replicaCount: 1
+
+image:
+  repository: bitnami/nginx
+  # tag: "latest"   # optional; pin a version if you prefer
+
+service:
+  type: ClusterIP
+  ports:
+    http: 80
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  hostname: nginx-demo.cloudforge.lab
+  path: /
+  pathType: Prefix
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  tls: []  # set up cert-manager later if you want HTTPS
+
+resources: {}
