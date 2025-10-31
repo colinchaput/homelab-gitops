@@ -1,0 +1,6 @@
+# Install CRDs with the chart (simplest with Argo CD)
+installCRDs: true
+
+global:
+  leaderElection:
+    namespace: cert-manager
