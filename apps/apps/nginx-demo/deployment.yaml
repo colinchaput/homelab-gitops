@@ -21,7 +21,7 @@ spec:
     - repoURL: https://charts.bitnami.com/bitnami
       chart: nginx
       # Either pin a version OR omit to track latest from the repo:
-      # targetRevision: 22.2.3
+      targetRevision: 22.2.3
       helm:
         valueFiles:
           - $values/apps/apps/nginx-demo/values.yaml
