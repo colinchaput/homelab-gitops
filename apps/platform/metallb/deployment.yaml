@@ -4,27 +4,22 @@ metadata:
   name: metallb
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"   # Deploy first (CRDs + controller)
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
-
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
-
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-  source:
-    repoURL: https://metallb.github.io/metallb
-    chart: metallb
-    # Pin the chart version so upgrades are intentional
-    targetRevision: v0.14.3
-
-    helm:
-      valueFiles:
-        - $values/apps/platform/metallb/values.yaml
+    automated: { prune: true, selfHeal: true }
+    syncOptions: [ "CreateNamespace=true" ]
+  sources:
+    - repoURL: https://metallb.github.io/metallb
+      chart: metallb
+      targetRevision: v0.14.3
+      helm:
+        valueFiles:
+          - $values/apps/platform/metallb/values.yaml   # <- uses the 2nd source
+    - repoURL: https://github.com/colinchaput/homelab-gitops
+      targetRevision: main
+      ref: values
