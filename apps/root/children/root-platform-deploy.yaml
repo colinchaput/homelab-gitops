@@ -16,7 +16,7 @@ spec:
     path: apps/platform
     directory:
       recurse: true
-      exclude: '{cert-manager-issuers/manifests/**}'
+      exclude: '**/manifests/**'   # <— critical so raw CRs aren't applied by the parent
   syncPolicy:
     automated:
       prune: true
