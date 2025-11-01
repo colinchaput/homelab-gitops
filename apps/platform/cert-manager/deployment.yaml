@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: cert-manager
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   destination:
@@ -15,16 +17,15 @@ spec:
     syncOptions:
       - CreateNamespace=true
   sources:
-    # 1) Install cert-manager via Helm (HTTPS, no OCI needed)
+    # 1) HELM SOURCE (must have targetRevision)
     - repoURL: https://charts.jetstack.io
       chart: cert-manager
-      # Optionally pin a version:
-      # targetRevision: v1.19.1
+      targetRevision: v1.19.1
       helm:
         valueFiles:
           - $values/apps/platform/cert-manager/values.yaml
-    # 2) Apply your ClusterIssuer/CA YAMLs from Git
+
+    # 2) VALUES-ONLY SOURCE (NO path!) — just provides the $values file
     - repoURL: https://github.com/colinchaput/homelab-gitops
       targetRevision: HEAD
       ref: values
-      path: apps/platform/cert-manager/issuers
