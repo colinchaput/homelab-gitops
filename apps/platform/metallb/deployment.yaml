@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metallb
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"   # Deploy first (CRDs + controller)
+spec:
+  project: default
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: metallb-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+  source:
+    repoURL: https://metallb.github.io/metallb
+    chart: metallb
+    # Pin the chart version so upgrades are intentional
+    targetRevision: v0.14.3
+
+    helm:
+      valueFiles:
+        - $values/apps/platform/metallb/values.yaml
