@@ -12,9 +12,9 @@ spec:
     namespace: monitoring
   sources:
     # 1) Namespace with PSA labels (from your repo)
-    - repoURL: https://your.git/repo.git
+    - repoURL: https://github.com/colinchaput/homelab-gitops.git
       targetRevision: main
-      path: monitoring        # folder that contains namespace.yaml
+      path: apps/apps/monitoring/kube-prometheus-stack        # folder that contains namespace.yaml
     # 2) Helm chart
     - repoURL: https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
