@@ -57,7 +57,7 @@ spec:
             tls:
               - secretName: heimdall-tls
                 hosts:
-                  - homepage.cloudforge.home.arpa
+                  - home.cloudforge.home.arpa
   syncPolicy:
     automated:
       prune: true
