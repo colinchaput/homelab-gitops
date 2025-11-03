@@ -1,0 +1,66 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: heimdall-k8sathome
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default-gitops
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps-heimdall
+  source:
+    repoURL: https://k8s-at-home.com/charts/
+    chart: heimdall
+    targetRevision: 8.4.2
+    helm:
+      values: |
+        image:
+          repository: lscr.io/linuxserver/heimdall
+          tag: latest
+          pullPolicy: IfNotPresent
+
+        env:
+          TZ: "America/Toronto"
+          PUID: "1000"
+          PGID: "1000"
+
+        service:
+          main:
+            ports:
+              http:
+                port: 80
+
+        persistence:
+          config:
+            enabled: true
+            # set your storageClass if you don't have a default:
+            # storageClass: "longhorn"   # <- example
+            accessMode: ReadWriteOnce
+            size: 1Gi
+            mountPath: /config
+            retain: true
+
+        ingress:
+          main:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              nginx.ingress.kubernetes.io/hsts: "false"     # optional while you sort trust
+              nginx.ingress.kubernetes.io/hsts-max-age: "0"
+            hosts:
+              - host: homepage.cloudforge.home.arpa
+                paths:
+                  - path: /
+                    pathType: Prefix
+            tls:
+              - secretName: heimdall-tls
+                hosts:
+                  - homepage.cloudforge.home.arpa
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
