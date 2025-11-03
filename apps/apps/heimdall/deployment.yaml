@@ -9,7 +9,7 @@ spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: apps-heimdall
+    namespace: apps-heimdall-homepage
   source:
     repoURL: https://k8s-at-home.com/charts/
     chart: heimdall
@@ -21,6 +21,7 @@ spec:
           tag: latest
           pullPolicy: IfNotPresent
 
+        # k8s-at-home legacy charts accept env as a map
         env:
           TZ: "America/Toronto"
           PUID: "1000"
@@ -35,8 +36,7 @@ spec:
         persistence:
           config:
             enabled: true
-            # set your storageClass if you don't have a default:
-            storageClass: "longhorn"   # <- example
+            storageClass: "longhorn"
             accessMode: ReadWriteOnce
             size: 1Gi
             mountPath: /config
@@ -47,25 +47,22 @@ spec:
             enabled: true
             ingressClassName: nginx
             annotations:
-              nginx.ingress.kubernetes.io/hsts: "false"     # optional while you sort trust
+              nginx.ingress.kubernetes.io/hsts: "false"
               nginx.ingress.kubernetes.io/hsts-max-age: "0"
               nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
               cert-manager.io/cluster-issuer: homelab-ca
+            hosts:
+              - host: home.cloudforge.home.arpa
+                paths:
+                  - path: /
+                    pathType: Prefix
             tls:
-              - hosts:
-                - nginx-demo.cloudforge.home.arpa
-              secretName: wildcard-cloudforge-home-arpa-tls
-          resources: {}
-            
-            #hosts:
-            #  - host: homepage.cloudforge.home.arpa
-            #    paths:
-            #      - path: /
-            #        pathType: Prefix
-           #tls:
-           #   - secretName: heimdall-tls
-           #     hosts:
-           #       - home.cloudforge.home.arpa
+              - secretName: wildcard-cloudforge-home-arpa-tls
+                hosts:
+                  - home.cloudforge.home.arpa
+
+        # keep empty or tune as desired
+        resources: {}
   syncPolicy:
     automated:
       prune: true
