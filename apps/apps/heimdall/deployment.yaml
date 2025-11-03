@@ -49,15 +49,23 @@ spec:
             annotations:
               nginx.ingress.kubernetes.io/hsts: "false"     # optional while you sort trust
               nginx.ingress.kubernetes.io/hsts-max-age: "0"
-            hosts:
-              - host: homepage.cloudforge.home.arpa
-                paths:
-                  - path: /
-                    pathType: Prefix
+              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+              cert-manager.io/cluster-issuer: homelab-ca
             tls:
-              - secretName: heimdall-tls
-                hosts:
-                  - home.cloudforge.home.arpa
+              - hosts:
+                - nginx-demo.cloudforge.home.arpa
+              secretName: wildcard-cloudforge-home-arpa-tls
+          resources: {}
+            
+            #hosts:
+            #  - host: homepage.cloudforge.home.arpa
+            #    paths:
+            #      - path: /
+            #        pathType: Prefix
+           #tls:
+           #   - secretName: heimdall-tls
+           #     hosts:
+           #       - home.cloudforge.home.arpa
   syncPolicy:
     automated:
       prune: true
