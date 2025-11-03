@@ -36,7 +36,7 @@ spec:
           config:
             enabled: true
             # set your storageClass if you don't have a default:
-            # storageClass: "longhorn"   # <- example
+            storageClass: "longhorn"   # <- example
             accessMode: ReadWriteOnce
             size: 1Gi
             mountPath: /config
