@@ -16,6 +16,7 @@ spec:
     path: apps/platform/_applications
     directory:
       recurse: false
+      include: "*-app.yaml"        # ← only Application CRs are picked up
       #exclude: '**/manifests/**'   # <— critical so raw CRs aren't applied by the parent
   syncPolicy:
     syncOptions:
