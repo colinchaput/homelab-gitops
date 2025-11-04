@@ -16,7 +16,7 @@ spec:
     targetRevision: HEAD
     path: apps/apps/_applications
     directory:
-      recurse: true
+      recurse: false
   syncPolicy:
     syncOptions:
       - CreateNamespace=false
