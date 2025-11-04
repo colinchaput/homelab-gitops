@@ -17,6 +17,7 @@ spec:
     path: apps/apps/_applications
     directory:
       recurse: false
+      include: "*-app.yaml"        # ← only Application CRs are picked up
   syncPolicy:
     syncOptions:
       - CreateNamespace=false
