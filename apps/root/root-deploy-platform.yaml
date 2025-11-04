@@ -15,7 +15,7 @@ spec:
     targetRevision: HEAD
     path: apps/platform/_applications
     directory:
-      recurse: true
+      recurse: false
       #exclude: '**/manifests/**'   # <— critical so raw CRs aren't applied by the parent
   syncPolicy:
     syncOptions:
