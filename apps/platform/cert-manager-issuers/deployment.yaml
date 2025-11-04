@@ -15,7 +15,7 @@ spec:
     targetRevision: HEAD
     path: apps/platform/cert-manager-issuers/manifests
     directory:
-      recurse: true
+      #recurse: true
   syncPolicy:
     automated:
       prune: true
