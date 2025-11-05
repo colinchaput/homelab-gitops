@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: https://github.com/colinchaput/homelab-gitops
     targetRevision: HEAD
-    path: apps/apps
+    path: apps_old/apps
     directory:
       recurse: true
   syncPolicy:
