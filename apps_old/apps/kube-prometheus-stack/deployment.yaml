@@ -57,14 +57,14 @@ spec:
               enabled: true
               ingressClassName: nginx
               annotations:
-                #cert-manager.io/cluster-issuer: homelab-ca
+                cert-manager.io/cluster-issuer: homelab-ca
                 nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
                 nginx.ingress.kubernetes.io/hsts: "false"
                 nginx.ingress.kubernetes.io/hsts-max-age: "0"
               hosts: [ "grafana.cloudforge.home.arpa" ]
               tls:
-                #- secretName: prometheus-stack-tls
-                #  hosts: [ "grafana.cloudforge.home.arpa" ]
+                - secretName: grafana-stack-tls
+                  hosts: [ "grafana.cloudforge.home.arpa" ]
 
           prometheus:
             prometheusSpec:
