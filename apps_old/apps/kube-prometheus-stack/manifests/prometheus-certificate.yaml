@@ -6,7 +6,6 @@ metadata:
 spec:
   secretName: prometheus-stack-tls
   dnsNames:
-    - grafana.cloudforge.home.arpa
     - prometheus.cloudforge.home.arpa
   issuerRef:
     kind: ClusterIssuer
