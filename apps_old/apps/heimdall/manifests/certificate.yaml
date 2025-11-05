@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-cloudforge-home-arpa
-  namespace: apps-heimdall
+  namespace: apps-heimdall-homepage
 spec:
   secretName: wildcard-cloudforge-home-arpa-tls
   dnsNames:
