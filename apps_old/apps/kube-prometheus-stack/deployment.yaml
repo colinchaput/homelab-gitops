@@ -93,4 +93,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-     # - CreateNamespace=true    #Removign this for now, since seperate namespace.yaml and being created by both root and this app. Will let root create
+      - CreateNamespace=true
