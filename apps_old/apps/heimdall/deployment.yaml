@@ -58,7 +58,7 @@ spec:
                   - path: /
                     pathType: Prefix
             tls:
-              - secretName: wildcard-cloudforge-home-arpa-tls
+              - secretName: heimdall-tls
                 hosts:
                   - home.cloudforge.home.arpa
 
