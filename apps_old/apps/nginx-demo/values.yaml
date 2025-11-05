@@ -16,8 +16,10 @@ ingress:
   path: /
   pathType: Prefix
   annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     cert-manager.io/cluster-issuer: homelab-ca
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/hsts: "false"
+    nginx.ingress.kubernetes.io/hsts-max-age: "0"
   tls:
     - hosts:
         - nginx-demo.cloudforge.home.arpa
