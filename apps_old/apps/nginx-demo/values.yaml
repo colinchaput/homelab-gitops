@@ -23,5 +23,5 @@ ingress:
   tls:
     - hosts:
         - nginx-demo.cloudforge.home.arpa
-      secretName: wildcard-cloudforge-home-arpa-tls
+      secretName: nginx-demo-tls
 resources: {}
