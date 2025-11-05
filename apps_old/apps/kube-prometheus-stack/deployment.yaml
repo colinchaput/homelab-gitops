@@ -63,7 +63,7 @@ spec:
                 nginx.ingress.kubernetes.io/hsts-max-age: "0"
               hosts: [ "grafana.cloudforge.home.arpa" ]
               tls:
-                - secretName: wildcard-cloudforge-home-arpa-tls
+                - secretName: prometheus-stack-tls
                   hosts: [ "grafana.cloudforge.home.arpa" ]
 
           prometheus:
