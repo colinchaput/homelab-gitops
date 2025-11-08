@@ -12,7 +12,7 @@ service:
 ingress:
   enabled: true
   ingressClassName: nginx
-  hostname: resume.cloudforge.home.arpa
+  hostname: nginx-demo.cloudforge.home.arpa
   path: /
   pathType: Prefix
   annotations:
