@@ -6,41 +6,41 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "1"   # after namespace (-2) & sealed secret (-1)
 spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
     namespace: cloudflared
   sources:
+    # A) Namespace + SealedSecret
     - repoURL: https://github.com/colinchaput/homelab-gitops.git
       targetRevision: main
       path: apps/platform/cloudflared/manifests
+
+    # B) Cloudflare Helm chart — **REMOTE** (token) variant
     - repoURL: https://cloudflare.github.io/helm-charts
-      chart: cloudflare-tunnel
-      targetRevision: 0.3.2
+      chart: cloudflare-tunnel-remote
+      targetRevision: 0.1.2
       helm:
         values: |
           replicas: 2
 
-          # --- TOKEN MODE (from your SealedSecret -> Secret)
+          # Provide the tunnel token via Secret -> env
           env:
             - name: TUNNEL_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: cloudflared-tunnel
                   key: token
-          args: ["tunnel","run","--token=$(TUNNEL_TOKEN)"]
 
-          # --- HARD DISABLE any credentials-file path on this chart version
-          cloudflare:
-            account: ""
-            secret: ""
-          credentials:
-            enabled: false
-          existingSecretName: ""
+          # Run with token (remotely-managed tunnel)
+          args:
+            - "tunnel"
+            - "run"
+            - "--token=$(TUNNEL_TOKEN)"
 
-          # Optional metrics annotations
+          # Optional: scrape metrics on :2000 (if chart exposes /metrics)
           podAnnotations:
             prometheus.io/scrape: "true"
             prometheus.io/port: "2000"
