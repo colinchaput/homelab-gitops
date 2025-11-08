@@ -20,7 +20,7 @@ spec:
     # B) Official Cloudflare Helm chart (token mode)
     - repoURL: https://cloudflare.github.io/helm-charts
       chart: cloudflare-tunnel
-      targetRevision: 0.1.2         # pin a version you tested
+      targetRevision: 0.3.2         # pin a version you tested
       helm:
         values: |
           replicas: 2
