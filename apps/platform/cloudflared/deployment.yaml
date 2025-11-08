@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudflared
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cloudflared
+  source:
+    repoURL: https://community-charts.github.io/helm-charts
+    chart: cloudflared
+    targetRevision: 2.2.3      # example version
+    helm:
+      values: |
+        replica:
+          count: 2
+
+        # Read token from the SealedSecret-created Secret:
+        extraEnv:
+          - name: TUNNEL_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: cloudflared-tunnel
+                key: token
+
+        command: ["cloudflared"]
+        args: ["tunnel","--no-autoupdate","run","--token","$(TUNNEL_TOKEN)"]
+
+        # Cloudflare Tunnel routing rules (not K8s Ingress)
+        ingress:
+          - hostname: nginx-demo.cloudforge.digital
+            service: https://nginx-demo.cloudforge.home.arpa:443
+            originRequest:
+              httpHostHeader: nginx-demo.cloudforge.digital
+          - service: http_status:404
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
