@@ -6,7 +6,6 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    # Ensures this syncs after namespace (-2) and sealed secret (-1)
     argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
@@ -14,38 +13,41 @@ spec:
     server: https://kubernetes.default.svc
     namespace: cloudflared
   sources:
-    # A) Your manifests (Namespace + SealedSecret)
+    # A) Namespace + SealedSecret (unchanged)
     - repoURL: https://github.com/colinchaput/homelab-gitops.git
       targetRevision: main
       path: apps/platform/cloudflared/manifests
 
-    # B) Cloudflare Helm chart — REMOTE (token) variant
+    # B) Cloudflare Helm chart — remote (token) variant (unchanged)
     - repoURL: https://cloudflare.github.io/helm-charts
       chart: cloudflare-tunnel-remote
       targetRevision: 0.1.2
       helm:
         values: |
-          # Scale
           replicas: 2
-
-          # Tell the chart to use an EXISTING Secret and DO NOT create one
-          # Secret name must match your SealedSecret/Secret:
-          #   cloudflared-cloudflare-tunnel-remote
-          # Key must be:
-          #   tunnelToken
           secret:
             name: cloudflared-cloudflare-tunnel-remote
             create: false
             key: tunnelToken
-
-          # (Optional) Prometheus scrape annotations
           podAnnotations:
             prometheus.io/scrape: "true"
             prometheus.io/port: "2000"
             prometheus.io/path: "/metrics"
+
+  # Make ArgoCD ignore diffs on the Secret created by SealedSecrets
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: cloudflared-cloudflare-tunnel-remote
+      namespace: cloudflared
+      jsonPointers:
+        - /data
+        - /type        # optional, in case controllers change it
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true
