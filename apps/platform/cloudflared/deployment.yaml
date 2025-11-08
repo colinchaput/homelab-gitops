@@ -6,40 +6,38 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "1"  # after namespace creation
 spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
     namespace: cloudflared
-  source:
-    repoURL: https://community-charts.github.io/helm-charts
-    chart: cloudflared
-    targetRevision: 2.2.3      # example version
-    helm:
-      values: |
-        replica:
-          count: 2
-
-        # Read token from the SealedSecret-created Secret:
-        extraEnv:
-          - name: TUNNEL_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: cloudflared-tunnel
-                key: token
-
-        command: ["cloudflared"]
-        args: ["tunnel","--no-autoupdate","run","--token","$(TUNNEL_TOKEN)"]
-
-        # Cloudflare Tunnel routing rules (not K8s Ingress)
-        ingress:
-          - hostname: nginx-demo.cloudforge.digital
-            service: https://nginx-demo.cloudforge.home.arpa:443
-            originRequest:
-              httpHostHeader: nginx-demo.cloudforge.digital
-          - service: http_status:404
-
+  sources:
+    # A) Your manifests (Namespace + SealedSecret)
+    - repoURL: https://github.com/colinchaput/homelab-gitops.git
+      targetRevision: main
+      path: apps/platform/cloudflared/manifests
+    # B) Official Cloudflare Helm chart (token mode)
+    - repoURL: https://cloudflare.github.io/helm-charts
+      chart: cloudflare-tunnel
+      targetRevision: 0.1.2         # pin a version you tested
+      helm:
+        values: |
+          replicas: 2
+          # read the token from the Secret created by the SealedSecret
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflared-tunnel
+                  key: token
+          # run exactly as Cloudflare recommends for remotely-managed tunnels
+          args: ["tunnel","run","--token=$(TUNNEL_TOKEN)"]
+          # optional: scrape metrics on :2000
+          podAnnotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "2000"
+            prometheus.io/path: "/metrics"
   syncPolicy:
     automated:
       prune: true
