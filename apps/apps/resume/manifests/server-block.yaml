@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resume-server-block
+  namespace: resume
+  annotations:
+    # ensure this lands before the Helm release mounts it
+    argocd.argoproj.io/sync-wave: "-1"
+data:
+  resume.conf: |
+    server {
+      listen 0.0.0.0:8080;
+      # Bitnami NGINX serves from here by default
+      root /opt/bitnami/nginx/html;
+
+      # Serve the PDF at /
+      location = / {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        add_header Content-Disposition "inline";
+        types { application/pdf pdf; }
+        try_files /resume.pdf =404;
+      }
+
+      # And directly at /resume.pdf
+      location = /resume.pdf {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        add_header Content-Disposition "inline";
+        types { application/pdf pdf; }
+        try_files /resume.pdf =404;
+      }
+
+      # Everything else 404
+      location / {
+        return 404;
+      }
+    }
