@@ -23,24 +23,39 @@ spec:
         values: |
           image:
             tag: stable
+          
+          # PARENT (Dashboard) Configuration
           parent:
             claiming:
               enabled: true
+            env:
+              - name: NETDATA_CLAIM_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: netdata-claim
+                    key: NETDATA_CLAIM_TOKEN
+              - name: NETDATA_CLAIM_ROOMS
+                valueFrom:
+                  secretKeyRef:
+                    name: netdata-claim
+                    key: NETDATA_CLAIM_ROOMS
+
+          # CHILD (Agent) Configuration
           child:
             claiming:
               enabled: true
-          # Connect the environment variables to your Sealed Secret
-          extraEnv:
-            - name: NETDATA_CLAIM_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: netdata-claim
-                  key: NETDATA_CLAIM_TOKEN
-            - name: NETDATA_CLAIM_ROOMS
-              valueFrom:
-                secretKeyRef:
-                  name: netdata-claim
-                  key: NETDATA_CLAIM_ROOMS
+            env:
+              - name: NETDATA_CLAIM_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: netdata-claim
+                    key: NETDATA_CLAIM_TOKEN
+              - name: NETDATA_CLAIM_ROOMS
+                valueFrom:
+                  secretKeyRef:
+                    name: netdata-claim
+                    key: NETDATA_CLAIM_ROOMS
+
   destination:
     server: https://kubernetes.default.svc
     namespace: netdata
