@@ -16,7 +16,7 @@ spec:
       path: apps/apps/netdata/manifests      # folder that contains namespace.yaml
     # Source 2: The Upstream Netdata Helm Chart
     - repoURL: https://netdata.github.io/helmchart/
-      targetRevision: stable
+      targetRevision: 3.7.153
       chart: netdata
       helm:
         values: |
