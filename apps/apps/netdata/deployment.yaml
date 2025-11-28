@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: netdata
+  namespace: argocd  # The namespace where ArgoCD itself is running
+spec:
+  project: default
+  source:
+    repoURL: https://netdata.github.io/helmchart/
+    targetRevision: stable
+    chart: netdata
+    helm:
+      # This is where we paste the contents of your values.yaml
+      # The " | " allows us to pass a multi-line string
+      values: |
+        image:
+          tag: stable
+        parent:
+          claiming:
+            enabled: true
+            token: <sealed-secret-file>
+            rooms: "407ef9f6-c34e-446c-ba9c-7573fa925ae0"
+        child:
+          claiming:
+            enabled: true
+            token: <sealed-secret-file>
+            rooms: "407ef9f6-c34e-446c-ba9c-7573fa925ae0"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: netdata
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
