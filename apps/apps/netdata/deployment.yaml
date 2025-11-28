@@ -10,7 +10,11 @@ spec:
   
   # MULTIPLE SOURCES CONFIGURATION
   sources:
-    # Source 1: The Upstream Netdata Helm Chart
+    # 1) Namespace with 
+    - repoURL: https://github.com/colinchaput/homelab-gitops.git
+      targetRevision: HEAD
+      path: apps/apps/netdata/manifests      # folder that contains namespace.yaml
+    # Source 2: The Upstream Netdata Helm Chart
     - repoURL: https://netdata.github.io/helmchart/
       targetRevision: stable
       chart: netdata
@@ -37,7 +41,7 @@ spec:
                   name: netdata-claim
                   key: NETDATA_CLAIM_ROOMS
 
-    # Source 2: Your Git Repo (To pick up sealed-secret.yaml)
+    # Source 3: Your Git Repo (To pick up sealed-secret.yaml)
     - repoURL: https://github.com/colinchaput/homelab-gitops.git
       targetRevision: HEAD
       path: apps/apps/netdata
