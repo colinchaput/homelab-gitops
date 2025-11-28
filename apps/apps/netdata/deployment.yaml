@@ -24,37 +24,29 @@ spec:
           image:
             tag: stable
           
-          # PARENT (Dashboard) Configuration
+          # 1. PARENT CONFIG (Dashboard)
           parent:
             claiming:
               enabled: true
-            env:
-              - name: NETDATA_CLAIM_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: netdata-claim
-                    key: NETDATA_CLAIM_TOKEN
-              - name: NETDATA_CLAIM_ROOMS
-                valueFrom:
-                  secretKeyRef:
-                    name: netdata-claim
-                    key: NETDATA_CLAIM_ROOMS
-
-          # CHILD (Agent) Configuration
+          
+          # 2. CHILD CONFIG (Agents)
           child:
             claiming:
               enabled: true
-            env:
-              - name: NETDATA_CLAIM_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: netdata-claim
-                    key: NETDATA_CLAIM_TOKEN
-              - name: NETDATA_CLAIM_ROOMS
-                valueFrom:
-                  secretKeyRef:
-                    name: netdata-claim
-                    key: NETDATA_CLAIM_ROOMS
+
+          # 3. GLOBAL ENVIRONMENT VARS (Must be at the root)
+          # This injects the secret into ALL Netdata pods (Parent + Children)
+          extraEnv:
+            - name: NETDATA_CLAIM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: netdata-claim
+                  key: NETDATA_CLAIM_TOKEN
+            - name: NETDATA_CLAIM_ROOMS
+              valueFrom:
+                secretKeyRef:
+                  name: netdata-claim
+                  key: NETDATA_CLAIM_ROOMS
 
   destination:
     server: https://kubernetes.default.svc
