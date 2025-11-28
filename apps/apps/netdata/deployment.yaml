@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: netdata
-  namespace: argocd  # The namespace where ArgoCD itself is running
+  namespace: argocd
 spec:
   project: default
   source:
@@ -10,21 +10,31 @@ spec:
     targetRevision: stable
     chart: netdata
     helm:
-      # This is where we paste the contents of your values.yaml
-      # The " | " allows us to pass a multi-line string
       values: |
         image:
           tag: stable
+        
+        # Enable claiming, but keep fields empty (we inject them below)
         parent:
           claiming:
             enabled: true
-            token: <sealed-secret-file>
-            rooms: "407ef9f6-c34e-446c-ba9c-7573fa925ae0"
         child:
           claiming:
             enabled: true
-            token: <sealed-secret-file>
-            rooms: "407ef9f6-c34e-446c-ba9c-7573fa925ae0"
+
+        # This tells Kubernetes: "Look at the secret named 'netdata-claim' 
+        # and inject those values as Environment Variables for the pod"
+        extraEnv:
+          - name: NETDATA_CLAIM_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: netdata-claim
+                key: NETDATA_CLAIM_TOKEN
+          - name: NETDATA_CLAIM_ROOMS
+            valueFrom:
+              secretKeyRef:
+                name: netdata-claim
+                key: NETDATA_CLAIM_ROOMS
   destination:
     server: https://kubernetes.default.svc
     namespace: netdata
