@@ -24,29 +24,22 @@ spec:
           image:
             tag: stable
           
-          # 1. PARENT CONFIG (Dashboard)
+          # PARENT (Dashboard)
           parent:
             claiming:
               enabled: true
-          
-          # 2. CHILD CONFIG (Agents)
+            # 'envFrom' loads the entire secret as environment variables
+            envFrom:
+              - secretRef:
+                  name: netdata-claim
+
+          # CHILD (Agents)
           child:
             claiming:
               enabled: true
-
-          # 3. GLOBAL ENVIRONMENT VARS (Must be at the root)
-          # This injects the secret into ALL Netdata pods (Parent + Children)
-          extraEnv:
-            - name: NETDATA_CLAIM_TOKEN
-              valueFrom:
-                secretKeyRef:
+            envFrom:
+              - secretRef:
                   name: netdata-claim
-                  key: NETDATA_CLAIM_TOKEN
-            - name: NETDATA_CLAIM_ROOMS
-              valueFrom:
-                secretKeyRef:
-                  name: netdata-claim
-                  key: NETDATA_CLAIM_ROOMS
 
   destination:
     server: https://kubernetes.default.svc
