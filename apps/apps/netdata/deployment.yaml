@@ -10,11 +10,12 @@ spec:
   
   # MULTIPLE SOURCES CONFIGURATION
   sources:
-    # 1) Namespace with 
+    # 1) Namespace + sealed secret yaml
     - repoURL: https://github.com/colinchaput/homelab-gitops.git
       targetRevision: HEAD
-      path: apps/apps/netdata/manifests      # folder that contains namespace.yaml
-    # Source 2: The Upstream Netdata Helm Chart
+      path: apps/apps/netdata/manifests
+    
+    # 2: The Upstream Netdata Helm Chart
     - repoURL: https://netdata.github.io/helmchart/
       targetRevision: 3.7.153
       chart: netdata
@@ -40,16 +41,6 @@ spec:
                 secretKeyRef:
                   name: netdata-claim
                   key: NETDATA_CLAIM_ROOMS
-
-    # Source 3: Your Git Repo (To pick up sealed-secret.yaml)
-    - repoURL: https://github.com/colinchaput/homelab-gitops.git
-      targetRevision: HEAD
-      path: apps/apps/netdata
-      # IMPORTANT: We must exclude this deployment.yaml file itself, 
-      # otherwise Argo tries to deploy the "Application" object into the "netdata" namespace.
-      directory:
-        exclude: 'deployment.yaml'
-
   destination:
     server: https://kubernetes.default.svc
     namespace: netdata
