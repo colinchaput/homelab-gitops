@@ -3,41 +3,53 @@ kind: Application
 metadata:
   name: netdata
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    repoURL: https://netdata.github.io/helmchart/
-    targetRevision: stable
-    chart: netdata
-    helm:
-      values: |
-        image:
-          tag: stable
-        
-        # Enable claiming, but keep fields empty (we inject them below)
-        parent:
-          claiming:
-            enabled: true
-        child:
-          claiming:
-            enabled: true
+  
+  # MULTIPLE SOURCES CONFIGURATION
+  sources:
+    # Source 1: The Upstream Netdata Helm Chart
+    - repoURL: https://netdata.github.io/helmchart/
+      targetRevision: stable
+      chart: netdata
+      helm:
+        values: |
+          image:
+            tag: stable
+          parent:
+            claiming:
+              enabled: true
+          child:
+            claiming:
+              enabled: true
+          # Connect the environment variables to your Sealed Secret
+          extraEnv:
+            - name: NETDATA_CLAIM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: netdata-claim
+                  key: NETDATA_CLAIM_TOKEN
+            - name: NETDATA_CLAIM_ROOMS
+              valueFrom:
+                secretKeyRef:
+                  name: netdata-claim
+                  key: NETDATA_CLAIM_ROOMS
 
-        # This tells Kubernetes: "Look at the secret named 'netdata-claim' 
-        # and inject those values as Environment Variables for the pod"
-        extraEnv:
-          - name: NETDATA_CLAIM_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: netdata-claim
-                key: NETDATA_CLAIM_TOKEN
-          - name: NETDATA_CLAIM_ROOMS
-            valueFrom:
-              secretKeyRef:
-                name: netdata-claim
-                key: NETDATA_CLAIM_ROOMS
+    # Source 2: Your Git Repo (To pick up sealed-secret.yaml)
+    - repoURL: https://github.com/colinchaput/homelab-gitops.git
+      targetRevision: HEAD
+      path: apps/apps/netdata
+      # IMPORTANT: We must exclude this deployment.yaml file itself, 
+      # otherwise Argo tries to deploy the "Application" object into the "netdata" namespace.
+      directory:
+        exclude: 'deployment.yaml'
+
   destination:
     server: https://kubernetes.default.svc
     namespace: netdata
+    
   syncPolicy:
     automated:
       prune: true
